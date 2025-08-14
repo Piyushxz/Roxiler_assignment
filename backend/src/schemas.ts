@@ -8,6 +8,6 @@ export const userRegistrationSchema = z.object({
     .max(16)
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
-  role: z.enum(['SYSTEM_ADMIN', 'NORMAL_USER', 'STORE_OWNER']),
+  role: z.enum(['SYSTEM_ADMIN', 'NORMAL_USER', 'STORE_OWNER']).optional(),
   address: z.string().max(200).optional(),
 });
