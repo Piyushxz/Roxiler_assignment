@@ -1,6 +1,9 @@
 import { LayoutDashboard, PlusIcon, Store, StoreIcon, Users, UserStar, ChevronDown } from "lucide-react"
 import { Navbar } from "../components/Navbar"
-import { useState } from "react"
+import { AddUserModal } from "../components/AddUserModal"
+import { AddStoreModal } from "../components/AddStoreModal"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 export const AdminDashboard = ()=>{
     const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores'>('overview')
@@ -8,9 +11,67 @@ export const AdminDashboard = ()=>{
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false)
     const [selectedRating, setSelectedRating] = useState<string>('All Ratings')
     const [isRatingDropdownOpen, setIsRatingDropdownOpen] = useState(false)
-    
+    const [totalRatings,setTotalRatings] = useState(0)
+    const [totalStores,setTotalStores] = useState(0)
+    const [totalUsers,setTotalUsers] = useState(0)
+    const [stores,setStores]= useState([])
+    const [users,setUsers]= useState([])
+    const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
+    const [isAddStoreModalOpen, setIsAddStoreModalOpen] = useState(false)
     const roles = ['All Roles', 'SYSTEM_ADMIN', 'NORMAL_USER', 'STORE_OWNER']
     const ratings = ['All Ratings', '1', '2', '3', '4', '5']
+
+
+    async function getDashboardData(){
+        try{
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard`,{
+                headers:{
+                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                }
+            })
+            setTotalRatings(response.data.totalRatings)
+            setTotalStores(response.data.totalStores)
+            setTotalUsers(response.data.totalUsers)
+        }
+        catch(err){
+            console.log(err)
+        }
+
+    }
+
+    async function getStores(){
+        try{
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/stores`,{
+                headers:{
+                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'          
+                      }
+            })
+            console.log(response.data)
+            setStores(response.data.stores)
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    async function getUsers(){
+        try{
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users`,{
+                headers:{
+                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                }
+            })
+            console.log(response.data)
+            setUsers(response.data.users)
+            
+        }catch(err){
+            console.log(err)
+        }
+    }
+    useEffect(()=>{
+        getDashboardData()
+        getStores()
+        getUsers()
+    },[])
 
     return(
         <div className="w-screen h-screen bg-black">
@@ -51,7 +112,6 @@ export const AdminDashboard = ()=>{
                     </div>
                 </div>
 
-                {/* Conditional rendering based on active tab */}
                 {activeTab === 'overview' && (
                     <>
                         <div className="w-full flex justify-between items-center gap-4">
@@ -62,7 +122,7 @@ export const AdminDashboard = ()=>{
                                     </div>
                                     <div className="flex flex-col">
                                     <h2 className="text-white text-md font-satoshi tracking-tighter">Total Users</h2>
-                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">100</h3>
+                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">{totalUsers}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +133,7 @@ export const AdminDashboard = ()=>{
                                     </div>
                                     <div className="flex flex-col">
                                     <h2 className="text-white text-md font-satoshi tracking-tighter">Total Stores</h2>
-                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">100</h3>
+                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">{totalStores}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +144,7 @@ export const AdminDashboard = ()=>{
                                     </div>
                                     <div className="flex flex-col">
                                     <h2 className="text-white text-md font-satoshi tracking-tighter">Total Ratings</h2>
-                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">100</h3>
+                                    <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">{totalRatings}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +152,10 @@ export const AdminDashboard = ()=>{
 
                         <div className="w-full flex items-center gap-4 my-4">
                             <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
-                                <button className="w-full hover:opacity-80 cursor-pointer transition-all duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2 ">
+                                <button 
+                                    onClick={() => setIsAddUserModalOpen(true)}
+                                    className="w-full hover:opacity-80 cursor-pointer transition-all duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2 "
+                                >
                                     <PlusIcon className="size-4 text-black"/>
                                     <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
                                         Add User
@@ -100,12 +163,15 @@ export const AdminDashboard = ()=>{
                                 </button>
                             </div>
                             <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
-                            <button className="w-full hover:opacity-80 transition-all cursor-pointer duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2">
-                                        <PlusIcon className="size-4 text-black"/>
-                                    <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
-                                        Add Store
-                                    </h3>
-                                </button>
+                                                        <button 
+                                onClick={() => setIsAddStoreModalOpen(true)}
+                                className="w-full hover:opacity-80 transition-all cursor-pointer duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2"
+                            >
+                                <PlusIcon className="size-4 text-black"/>
+                            <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
+                                Add Store
+                            </h3>
+                            </button>
                             </div>
                         </div>
                     </>
@@ -115,7 +181,10 @@ export const AdminDashboard = ()=>{
                     <>
                                         <div className="w-full bg-[#191919] rounded-md border border-white/15 p-2">
                         <div className="flex  justify-end">
-                            <button className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2">
+                            <button 
+                                onClick={() => setIsAddUserModalOpen(true)}
+                                className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2"
+                            >
                                 <PlusIcon className="size-4 text-black"/>
                                 <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
                                     Add User
@@ -187,55 +256,36 @@ export const AdminDashboard = ()=>{
                                      </tr>
                                  </thead>
                                  <tbody>
-                                     {/* Sample data - replace with actual API data */}
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             John Doe
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             john.doe@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             123 Main St, City, State
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <span className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-md text-xs">
-                                                 NORMAL_USER
-                                             </span>
-                                         </td>
-                                     </tr>
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             Jane Smith
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             jane.smith@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             456 Oak Ave, Town, State
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <span className="bg-red-500/20 text-red-300 px-2 py-1 rounded-md text-xs">
-                                                 SYSTEM_ADMIN
-                                             </span>
-                                         </td>
-                                     </tr>
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             Mike Johnson
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             mike.johnson@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             789 Pine Rd, Village, State
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <span className="bg-green-500/20 text-green-300 px-2 py-1 rounded-md text-xs">
-                                                 STORE_OWNER
-                                             </span>
-                                         </td>
-                                     </tr>
+                                     {users.length > 0 ? (
+                                         users.map((user: any) => (
+                                             <tr key={user.id} className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {user.name}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {user.email}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {user.address || 'No address'}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     <span className={`px-2 py-1 rounded-md text-xs ${
+                                                         user.role === 'NORMAL_USER' ? 'bg-blue-500/20 text-blue-300' :
+                                                         user.role === 'SYSTEM_ADMIN' ? 'bg-red-500/20 text-red-300' :
+                                                         'bg-green-500/20 text-green-300'
+                                                     }`}>
+                                                         {user.role}
+                                                     </span>
+                                                 </td>
+                                             </tr>
+                                         ))
+                                     ) : (
+                                         <tr>
+                                             <td colSpan={4} className="text-center text-white/60 text-sm font-satoshi py-8">
+                                                 No users found
+                                             </td>
+                                         </tr>
+                                     )}
                                  </tbody>
                              </table>
                          </div>
@@ -253,12 +303,15 @@ export const AdminDashboard = ()=>{
                     <>
                         <div className="w-full bg-[#191919] rounded-md border border-white/15 p-2">
                                                  <div className="flex  justify-end">
-                             <button className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2">
-                                 <PlusIcon className="size-4 text-black"/>
-                                 <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
-                                     Add Store
-                                 </h3>
-                             </button>
+                                                         <button 
+                                onClick={() => setIsAddStoreModalOpen(true)}
+                                className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2"
+                            >
+                                <PlusIcon className="size-4 text-black"/>
+                                <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
+                                    Add Store
+                                </h3>
+                            </button>
                          </div>
                          <div className="flex gap-4 pt-4">
                              <input type="text" placeholder="Filter By Store Name" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
@@ -321,87 +374,59 @@ export const AdminDashboard = ()=>{
                                      </tr>
                                  </thead>
                                  <tbody>
-                                     {/* Sample data - replace with actual API data */}
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             TechMart Electronics
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             techmart@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             123 Tech Street, Silicon Valley, CA
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <div className="flex items-center gap-1">
-                                                 <span className="text-yellow-400">★</span>
-                                                 <span className="text-white">4.5</span>
-                                             </div>
-                                         </td>
-                                     </tr>
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             Fashion Forward
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             fashion@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             456 Style Avenue, Fashion District, NY
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <div className="flex items-center gap-1">
-                                                 <span className="text-yellow-400">★</span>
-                                                 <span className="text-white">3.8</span>
-                                             </div>
-                                         </td>
-                                     </tr>
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             Gourmet Delights
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             gourmet@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             789 Food Court, Culinary Quarter, TX
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <div className="flex items-center gap-1">
-                                                 <span className="text-yellow-400">★</span>
-                                                 <span className="text-white">4.9</span>
-                                             </div>
-                                         </td>
-                                     </tr>
-                                     <tr className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             Home & Garden Plus
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             homegarden@example.com
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             321 Garden Lane, Suburban Heights, FL
-                                         </td>
-                                         <td className="text-white text-sm font-satoshi py-3 px-4">
-                                             <div className="flex items-center gap-1">
-                                                 <span className="text-yellow-400">★</span>
-                                                 <span className="text-white">4.2</span>
-                                             </div>
-                                         </td>
-                                     </tr>
+                                     {stores.length > 0 ? (
+                                         stores.map((store: any) => (
+                                             <tr key={store.id} className="border-b border-white/10 hover:bg-white/5 transition-colors duration-200">
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {store.name}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {store.owner?.email || 'No email'}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     {store.owner?.address || 'No address'}
+                                                 </td>
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                     <div className="flex items-center gap-1">
+                                                         <span className="text-yellow-400">★</span>
+                                                         <span className="text-white">{store.averageRating || 0}</span>
+                                                     </div>
+                                                 </td>
+                                             </tr>
+                                         ))
+                                     ) : (
+                                         <tr>
+                                             <td colSpan={4} className="text-center text-white/60 text-sm font-satoshi py-8">
+                                                 No stores found
+                                             </td>
+                                         </tr>
+                                     )}
                                  </tbody>
                              </table>
                          </div>
-                         
-                         {/* No data message */}
-                         {/* <div className="text-center text-white/60 text-sm font-satoshi py-8">
-                             No stores found
-                         </div> */}
+
                      </div>
                     </>
                 )}
             </section>
+
+            <AddUserModal 
+                isOpen={isAddUserModalOpen}
+                onClose={() => setIsAddUserModalOpen(false)}
+                onUserAdded={() => {
+                    getUsers()
+                    getDashboardData()
+                }}
+            />
+
+            <AddStoreModal 
+                isOpen={isAddStoreModalOpen}
+                onClose={() => setIsAddStoreModalOpen(false)}
+                onStoreAdded={() => {
+                    getStores()
+                    getDashboardData()
+                }}
+            />
         </div>
     )
 }
