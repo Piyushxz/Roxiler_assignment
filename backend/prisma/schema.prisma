@@ -29,13 +29,10 @@ model User{
   name String
   address String? 
   role userRole @default(NORMAL_USER)
-
   ownedStores Store[]
   ratings Ratings[]
   
-  
 }
-
 
 model Store{
   id String @id @default(uuid())

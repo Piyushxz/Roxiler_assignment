@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { adminRouter } from "./admin";
-import { ratingsRouter } from "./ratings";
 import { userRouter } from "./users";
 import { client } from "../..";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { storeOwnerRouter } from "./store-owner";
 export const v1Router = Router()
 
 v1Router.post('/login', async (req, res) => {
@@ -74,6 +74,6 @@ v1Router.post('/login', async (req, res) => {
 })
 
 v1Router.use('/admin',adminRouter)
-v1Router.use('/ratings',ratingsRouter)
+v1Router.use('/store-owner',storeOwnerRouter)
 v1Router.use('/users',userRouter)
 
