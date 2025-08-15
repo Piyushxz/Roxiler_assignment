@@ -12,6 +12,7 @@ export const OwnerDashboard = ()=>{
     const [dashboardData,setDashboardData] = useState({}) as any
     const [storeRatings,setStoreRatings] = useState([]) as any
     const [isEditPasswordModalOpen,setIsEditPasswordModalOpen] = useState(false)
+    
     async function getDashboardData(){
         try{
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/store-owner/dashboard`,{
@@ -25,6 +26,7 @@ export const OwnerDashboard = ()=>{
             console.log(err)
         }
     }
+    
     async function getStoreRatings(){
         try{
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/store-owner/store/ratings/${dashboardData?.storeId}`,{
@@ -38,9 +40,9 @@ export const OwnerDashboard = ()=>{
             console.log(err)
         }
     }
+    
     useEffect(()=>{
         getDashboardData()
-
     },[])
 
     useEffect(()=>{
@@ -48,11 +50,11 @@ export const OwnerDashboard = ()=>{
     },[dashboardData])
 
     return(
-        <div className="w-screen h-screen bg-black">
+        <div className="w-full min-h-screen bg-black overflow-x-hidden">
             <Navbar/>
             <section className="w-[80%] mx-auto py-10">
                 <div className="flex justify-between items-center bg-[#191919] border border-white/15 rounded-md p-4">
-                <div className="w-full flex flex-col  ">
+                <div className="w-full flex flex-col">
                     <h1 className="text-2xl text-white font-satoshi font-bold tracking-tighter">
                         {dashboardData?.storeName}
                     </h1>
@@ -61,21 +63,20 @@ export const OwnerDashboard = ()=>{
                     </h2>
                 </div>
                 <div className="flex items-center gap-2">
-
                         <button onClick={()=>setIsEditPasswordModalOpen(true)} className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap">
                             <Edit className="text-black size-4"/>
-                            <span className="font-satoshi ">Update Password</span>
+                            <span className="font-satoshi">Update Password</span>
                         </button>
                     </div>
                 </div>
-
             </section>
-            <section className="w-[80%] mx-auto ">
+            
+            <section className="w-[80%] mx-auto">
                 <div className="w-full flex justify-between items-center gap-4">
                 <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
                                 <div className="flex gap-2 items-center">
                                     <div className="border rounded-md p-2 border-white/15 size-10">
-                                        <User className="text-white "/>
+                                        <User className="text-white"/>
                                     </div>
                                     <div className="flex flex-col">
                                     <h2 className="text-white text-md font-satoshi tracking-tighter">Total Ratings</h2>
@@ -86,7 +87,7 @@ export const OwnerDashboard = ()=>{
                 <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
                                 <div className="flex gap-2 items-center">
                                     <div className="border rounded-md p-2 border-white/15 size-10">
-                                        <Star className="text-white "/>
+                                        <Star className="text-white"/>
                                     </div>
                                     <div className="flex flex-col">
                                     <h2 className="text-white text-md font-satoshi tracking-tighter">Average Rating</h2>
@@ -94,7 +95,6 @@ export const OwnerDashboard = ()=>{
                                     </div>
                                 </div>
                 </div>
-
                                  </div>
              </section>
 

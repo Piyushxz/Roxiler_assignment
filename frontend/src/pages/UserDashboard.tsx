@@ -7,7 +7,7 @@ import { EditPasswordModal } from "../components/EditPasswordModal"
 import { useAuth } from "../context/AuthContext"
 
 export const UserDashboard = ()=>{
-
+    
     const {user,token} = useAuth()
     const [stores,setStores] = useState([])
     const [filteredStores,setFilteredStores] = useState([])
@@ -45,8 +45,9 @@ export const UserDashboard = ()=>{
             setFilteredStores(filtered)
         }
     },[searchQuery, stores])
+
     return(
-        <div className="w-[100vw] h-screen bg-black">
+        <div className="w-full min-h-screen bg-black overflow-x-hidden">
             <Navbar/>
             <section className="w-[80%] mx-auto py-10">
                 <div className="w-full flex justify-between items-center bg-[#191919] border border-white/15 rounded-md p-4">
@@ -62,33 +63,33 @@ export const UserDashboard = ()=>{
                 </div>
             </section>
 
-        <div className="flex justify-center ">
-        <section className="w-[80%] ">
+        <div className="flex justify-center">
+            <section className="w-[80%]">
                 <div className="w-full flex justify-between items-center bg-[#191919] border border-white/15 rounded-md p-4">
-                <input 
-                    type="text" 
-                    placeholder="Search using Name, Address, Description" 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-transparent border-white/15 border py-2 px-4 rounded-md text-white"
-                />
+                    <input 
+                        type="text"
+                        placeholder="Search using Name, Address, Description"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-transparent border-white/15 border py-2 px-4 rounded-md text-white"
+                    />
                 </div>
             </section>
         </div>
 
-            <section className=" py-4  flex justify-center px-10 ">
-                
-                    <div className="flex flex-wrap gap-4 ">
-                        {
-                    filteredStores.map((store:any)=>(
-                        <StoreCard key={store.id} store={store} currentUserId={user?.id} onRefresh={fetchStores}/>
-                    ))
-                }
-                    </div>
-
-                
+        <div className="w-full flex justify-center">
+            <section className="py-4 flex justify-center  w-[80%]">
+                <div className="flex flex-wrap gap-4">
+                    {
+                        filteredStores.map((store:any)=>(
+                            <StoreCard key={store.id} store={store} currentUserId={user?.id} onRefresh={fetchStores}/>
+                        ))
+                    }
+                </div>
             </section>
-            <EditPasswordModal isOpen={isEditPasswordModalOpen} onClose={()=>setIsEditPasswordModalOpen(false)}/>
+        </div>
+
+        <EditPasswordModal isOpen={isEditPasswordModalOpen} onClose={()=>setIsEditPasswordModalOpen(false)}/>
         </div>
     )
 }
