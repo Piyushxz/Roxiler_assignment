@@ -144,9 +144,9 @@ export async function handleUpdatePassword(req:Request,res:Response){
             })
         }
 
-        const {oldPassword,newPassword} = req.body
+        const {currentPassword,newPassword} = req.body
 
-        if(!oldPassword || !newPassword){
+        if(!currentPassword || !newPassword){
             return res.status(400).json({
                 message:"All fields are required"
             })
@@ -162,7 +162,7 @@ export async function handleUpdatePassword(req:Request,res:Response){
             })
         }
 
-        const isPasswordValid = await bcrypt.compare(oldPassword,findUser.password)
+        const isPasswordValid = await bcrypt.compare(currentPassword,findUser.password)
 
         if(!isPasswordValid){
             return res.status(401).json({
@@ -224,7 +224,6 @@ export async function handleGetStoresWithRatings(req:Request,res:Response){
             where:whereClause
         })
 
-        // Calculate average rating for each store
         const storesWithAverageRating = stores.map(store => {
             const totalRatings = store.ratings.length;
             const averageRating = totalRatings > 0 

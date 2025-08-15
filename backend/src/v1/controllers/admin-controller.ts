@@ -106,7 +106,26 @@ export async function handleCreateUser(req:Request,res:Response){
 
 export async function handleGetStores(req:Request,res:Response){
     try{
+        const { name, description, rating } = req.query;
+        
+        const whereClause: any = {};
+        // IF WE dont check type string it may break if number is passed
+        if (name && typeof name === 'string') {
+            whereClause.name = {
+                contains: name,
+                mode: 'insensitive'
+            };
+        }
+        
+        if (description && typeof description === 'string') {
+            whereClause.description = {
+                contains: description,
+                mode: 'insensitive'
+            };
+        }
+
         const stores = await client.store.findMany({
+            where: whereClause,
             include:{
                 ratings:true,
                 owner: {
@@ -120,8 +139,7 @@ export async function handleGetStores(req:Request,res:Response){
             }
         })
 
-        // Calculate average rating for each store
-        const storesWithAverageRating = stores.map(store => {
+        let storesWithAverageRating = stores.map(store => {
             const totalRatings = store.ratings.length;
             const averageRating = totalRatings > 0 
                 ? store.ratings.reduce((sum, rating) => sum + rating.rating, 0) / totalRatings 
@@ -140,6 +158,13 @@ export async function handleGetStores(req:Request,res:Response){
                 ratings: store.ratings
             };
         });
+
+        if (rating && typeof rating === 'string' && rating !== 'All Ratings') {
+            const ratingValue = parseInt(rating);
+            storesWithAverageRating = storesWithAverageRating.filter(store => 
+                store.averageRating >= ratingValue
+            );
+        }
 
         return res.status(200).json({
             message:"Stores fetched successfully",
@@ -176,13 +201,48 @@ export async function handleGetDashboardData(req:Request,res:Response){
 
 export async function handleGetUsers(req:Request,res:Response) {
     try{
-        const users = await client.user.findMany()
+        const { name, email, address, role } = req.query;
+        
+        const whereClause: any = {};
+        
+        if (name && typeof name === 'string') {
+            whereClause.name = {
+                contains: name,
+                mode: 'insensitive'
+            };
+        }
+        
+        if (email && typeof email === 'string') {
+            whereClause.email = {
+                contains: email,
+                mode: 'insensitive'
+            };
+        }
+        
+        if (address && typeof address === 'string') {
+            whereClause.address = {
+                contains: address,
+                mode: 'insensitive'
+            };
+        }
+        
+        if (role && typeof role === 'string' && role !== 'All Roles') {
+            whereClause.role = role;
+        }
+
+        const users = await client.user.findMany({
+            where: whereClause
+        });
+        
         return res.status(200).json({
             message:"Users fetched successfully",
             users
         })
     }catch(err){
         console.error('Error fetching users:',err)
+        return res.status(500).json({
+            message:"Internal server error"
+        })
     }
 }
 

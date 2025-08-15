@@ -18,7 +18,6 @@ v1Router.post('/login', async (req, res) => {
             return;
         }
 
-        // Find user by email only (since email is unique)
         const user = await client.user.findUnique({
             where: {
                 email: email
@@ -32,7 +31,6 @@ v1Router.post('/login', async (req, res) => {
             return;
         }
 
-        // Compare password (assuming passwords are hashed)
         const isPasswordValid = await bcrypt.compare(password, user.password)
         
         if (!isPasswordValid) {
@@ -42,7 +40,6 @@ v1Router.post('/login', async (req, res) => {
             return;
         }
 
-        // Generate JWT token
         const token = jwt.sign(
             { 
                 userId: user.id, 

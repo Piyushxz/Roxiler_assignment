@@ -62,7 +62,6 @@ export const getDashboard = async (req: Request, res: Response) => {
             });
         }
 
-        // Get the first store owned by the store owner (each store owner can only have one store)
         const store = await client.store.findFirst({
             where: { ownerId: userId },
             include: {
@@ -131,7 +130,6 @@ export const getStoreRatings = async (req: Request, res: Response) => {
             });
         }
 
-        // Verify the store belongs to the store owner
         const store = await client.store.findFirst({
             where: {
                 id: storeId,
