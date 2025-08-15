@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { X } from "lucide-react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 interface AddUserModalProps {
     isOpen: boolean
@@ -9,6 +10,7 @@ interface AddUserModalProps {
 }
 
 export const AddUserModal = ({ isOpen, onClose, onUserAdded }: AddUserModalProps) => {
+    const { token } = useAuth()
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -29,7 +31,7 @@ export const AddUserModal = ({ isOpen, onClose, onUserAdded }: AddUserModalProps
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/create-user`, formData, {
                 headers: {
-                    authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                    authorization: token
                 }
             })
 

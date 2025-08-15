@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { X, Search, ChevronDown } from "lucide-react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 interface AddStoreModalProps {
     isOpen: boolean
@@ -16,6 +17,7 @@ interface StoreOwner {
 }
 
 export const AddStoreModal = ({ isOpen, onClose, onStoreAdded }: AddStoreModalProps) => {
+    const { token } = useAuth()
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -29,14 +31,12 @@ export const AddStoreModal = ({ isOpen, onClose, onStoreAdded }: AddStoreModalPr
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedOwner, setSelectedOwner] = useState<StoreOwner | null>(null)
 
-    // Fetch store owners on modal open
     useEffect(() => {
         if (isOpen) {
             fetchStoreOwners()
         }
     }, [isOpen])
 
-    // Filter store owners based on search term
     useEffect(() => {
         if (searchTerm.trim() === '') {
             setFilteredOwners(storeOwners)
@@ -53,11 +53,10 @@ export const AddStoreModal = ({ isOpen, onClose, onStoreAdded }: AddStoreModalPr
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users`, {
                 headers: {
-                    authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                    authorization: token
                 }
             })
             
-            // Filter only STORE_OWNER users
             const storeOwnersOnly = response.data.users.filter((user: StoreOwner) => user.role === 'STORE_OWNER')
             setStoreOwners(storeOwnersOnly)
             setFilteredOwners(storeOwnersOnly)
@@ -84,7 +83,7 @@ export const AddStoreModal = ({ isOpen, onClose, onStoreAdded }: AddStoreModalPr
                 userId: selectedOwner.id
             }, {
                 headers: {
-                    authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                    authorization: token
                 }
             })
 

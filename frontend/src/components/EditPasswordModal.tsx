@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { X, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 
 
 export const EditPasswordModal = ({ isOpen, onClose ,mode = 'user'}:any) => {
+    const { token } = useAuth()
     const [formData, setFormData] = useState({
         oldPassword: "",
         newPassword: "",
@@ -41,10 +43,7 @@ export const EditPasswordModal = ({ isOpen, onClose ,mode = 'user'}:any) => {
                 ? `${import.meta.env.VITE_API_URL}/store-owner/update-password`
                 : `${import.meta.env.VITE_API_URL}/users/update-password`
 
-            // Determine token based on mode
-            const token = mode === 'store-owner'
-                ? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmI0M2IyMC0xZmI5LTRlZDAtOGIzMy1kOGYyOTk4YTA0NDkiLCJlbWFpbCI6InBpeXVzaDIyMjIyQGdtYWlsLmNvbSIsInJvbGUiOiJTVE9SRV9PV05FUiIsImlhdCI6MTc1NTI3NTc1OH0.LIhHY1meOu2Nh6rbZjoBLbShe0uMKdTgt5OINKLWufE'
-                : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZWE0MzI2NC1iNTJhLTRkZjMtODI1NS03YzYzNzNjMzJkMjUiLCJlbWFpbCI6InBpeXV1c2VyMkBnbWFpbC5jb20iLCJyb2xlIjoiTk9STUFMX1VTRVIiLCJpYXQiOjE3NTUyNjQ4MDF9.jLIiIJfCPQBcxFmcMozciBT8_aElRYV_4-jhJTZosxM'
+            // Use token from useAuth hook
 
             const response = await axios.put(endpoint, {
                 currentPassword: formData.oldPassword,

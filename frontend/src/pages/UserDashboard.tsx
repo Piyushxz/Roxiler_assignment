@@ -4,12 +4,14 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { StoreCard } from "../components/StoreCard"
 import { EditPasswordModal } from "../components/EditPasswordModal"
+import { useAuth } from "../context/AuthContext"
 
 export const UserDashboard = ()=>{
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZWE0MzI2NC1iNTJhLTRkZjMtODI1NS03YzYzNzNjMzJkMjUiLCJlbWFpbCI6InBpeXV1c2VyMkBnbWFpbC5jb20iLCJyb2xlIjoiTk9STUFMX1VTRVIiLCJpYXQiOjE3NTUyNjQ4MDF9.jLIiIJfCPQBcxFmcMozciBT8_aElRYV_4-jhJTZosxM'
-    const testUserId = '6ea43264-b52a-4df3-8255-7c6373c32d25'
 
+    const {user,token} = useAuth()
     const [stores,setStores] = useState([])
+    const [filteredStores,setFilteredStores] = useState([])
+    const [searchQuery,setSearchQuery] = useState('')
     const [isEditPasswordModalOpen,setIsEditPasswordModalOpen] = useState(false)
 
     const fetchStores = async ()=>{
@@ -20,22 +22,36 @@ export const UserDashboard = ()=>{
                 }
             })
             setStores(response.data.stores)
+            setFilteredStores(response.data.stores)
         }
         catch(err){
             console.log(err)
         }
     }
-    useEffect(()=>{
 
+    useEffect(()=>{
         fetchStores()
     },[])
+
+    useEffect(()=>{
+        if(searchQuery.trim() === ''){
+            setFilteredStores(stores)
+        } else {
+            const filtered = stores.filter((store:any) => 
+                store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                store.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                store.address?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            setFilteredStores(filtered)
+        }
+    },[searchQuery, stores])
     return(
-        <div className="w-screen h-screen bg-black">
+        <div className="w-[100vw] h-screen bg-black">
             <Navbar/>
             <section className="w-[80%] mx-auto py-10">
                 <div className="w-full flex justify-between items-center bg-[#191919] border border-white/15 rounded-md p-4">
                     <h1 className="text-2xl text-white font-satoshi font-bold tracking-tighter">
-                        Welcome 
+                        Welcome {user?.name}
                     </h1>
                     <div className="flex items-center gap-2">
                         <button onClick={()=>setIsEditPasswordModalOpen(true)} className="bg-white text-black px-4 py-2 rounded-md flex items-center gap-2">
@@ -46,18 +62,26 @@ export const UserDashboard = ()=>{
                 </div>
             </section>
 
-            <section className="w-[80%] mx-auto ">
+        <div className="flex justify-center ">
+        <section className="w-[80%] ">
                 <div className="w-full flex justify-between items-center bg-[#191919] border border-white/15 rounded-md p-4">
-                <input type="text" placeholder="Search using Name , Address" className="w-full bg-transparent border-white/15 border py-2 px-4 rounded-md text-white"/>
-
+                <input 
+                    type="text" 
+                    placeholder="Search using Name, Address, Description" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-transparent border-white/15 border py-2 px-4 rounded-md text-white"
+                />
                 </div>
             </section>
-            <section className="w-[80%] mx-auto py-4 ">
+        </div>
+
+            <section className=" py-4  flex justify-center px-10 ">
                 
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-wrap gap-4 ">
                         {
-                    stores.map((store:any)=>(
-                        <StoreCard key={store.id} store={store} currentUserId={testUserId} onRefresh={fetchStores}/>
+                    filteredStores.map((store:any)=>(
+                        <StoreCard key={store.id} store={store} currentUserId={user?.id} onRefresh={fetchStores}/>
                     ))
                 }
                     </div>

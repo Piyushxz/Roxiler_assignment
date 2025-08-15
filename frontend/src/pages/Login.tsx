@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { useAuth } from "../context/AuthContext"
+import { Eye, EyeOff } from "lucide-react"
 
 export const Login = ()=>{
     const [activeTab, setActiveTab] = useState('login')
+    const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -93,15 +95,24 @@ export const Login = ()=>{
                         <label className="block text-white text-sm font-satoshi mb-2">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            placeholder="Enter your password"
-                            className="w-full bg-white border border-black/15 rounded-md p-2 text-black"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Enter your password"
+                                className="w-full bg-white border border-black/15 rounded-md p-2 pr-10 text-black"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                            >
+                                {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                            </button>
+                        </div>
                     </div>
 
                     {activeTab === 'signup' && (

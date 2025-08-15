@@ -1,9 +1,11 @@
 import { Star, Edit, X } from "lucide-react"
 import { useState } from "react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
     const [isLoading, setIsLoading] = useState(false)
+    const {token} = useAuth()
     const [error, setError] = useState('')
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editFormData, setEditFormData] = useState({
@@ -22,7 +24,7 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
                 comment: editFormData.comment
             }, {
                 headers: {
-                    authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZWE0MzI2NC1iNTJhLTRkZjMtODI1NS03YzYzNzNjMzJkMjUiLCJlbWFpbCI6InBpeXV1c2VyMkBnbWFpbC5jb20iLCJyb2xlIjoiTk9STUFMX1VTRVIiLCJpYXQiOjE3NTUyNjQ4MDF9.jLIiIJfCPQBcxFmcMozciBT8_aElRYV_4-jhJTZosxM'
+                    authorization: token
                 }
             })
             
@@ -56,7 +58,7 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
                 comment: editFormData.comment
             }, {
                 headers: {
-                    authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZWE0MzI2NC1iNTJhLTRkZjMtODI1NS03YzYzNzNjMzJkMjUiLCJlbWFpbCI6InBpeXV1c2VyMkBnbWFpbC5jb20iLCJyb2xlIjoiTk9STUFMX1VTRVIiLCJpYXQiOjE3NTUyNjQ4MDF9.jLIiIJfCPQBcxFmcMozciBT8_aElRYV_4-jhJTZosxM'
+                    authorization: token
                 }
             })
             
@@ -83,16 +85,16 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
         <>
             <div className="w-80 h-64 bg-[#191919] border border-white/15 rounded-md p-4 flex flex-col">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-white text-lg font-satoshi font-bold tracking-tighter">
+            <h1 className="text-white text-lg font-satoshi font-bold tracking-tighter">
                         {store.name}
-                    </h1>
-                    <div className="flex gap-1 items-center">
-                        <Star className="text-yellow-300 size-6 fill-yellow-300"/>
-                        <p className="text-white text-lg font-satoshi font-normal tracking-tighter">
+            </h1>
+            <div className="flex gap-1 items-center">
+                <Star className="text-yellow-300 size-6 fill-yellow-300"/>
+                <p className="text-white text-lg font-satoshi font-normal tracking-tighter">
                             {store.averageRating || 0}
-                        </p>
-                    </div>
-                </div>
+                </p>
+            </div>
+        </div>
 
                 <p className="text-white text-sm font-satoshi font-normal tracking-tighter py-2 flex-1">
                     {store.description}
@@ -219,7 +221,7 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
                         </div>
                     </form>
                 </div>
-            </div>
+    </div>
         )}
         </>
     )

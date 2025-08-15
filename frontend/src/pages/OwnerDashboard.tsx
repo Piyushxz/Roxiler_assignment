@@ -3,10 +3,12 @@ import { Navbar } from "../components/Navbar"
 import { useEffect, useState } from "react"
 import { Edit, Star, User } from "lucide-react"
 import { EditPasswordModal } from "../components/EditPasswordModal"
+import { useAuth } from "../context/AuthContext"
 
 export const OwnerDashboard = ()=>{
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmI0M2IyMC0xZmI5LTRlZDAtOGIzMy1kOGYyOTk4YTA0NDkiLCJlbWFpbCI6InBpeXVzaDIyMjIyQGdtYWlsLmNvbSIsInJvbGUiOiJTVE9SRV9PV05FUiIsImlhdCI6MTc1NTI3NTc1OH0.LIhHY1meOu2Nh6rbZjoBLbShe0uMKdTgt5OINKLWufE'
-    const storeId = '01380526-8f2d-49f5-ade2-0011c82d043a'
+    // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NmI0M2IyMC0xZmI5LTRlZDAtOGIzMy1kOGYyOTk4YTA0NDkiLCJlbWFpbCI6InBpeXVzaDIyMjIyQGdtYWlsLmNvbSIsInJvbGUiOiJTVE9SRV9PV05FUiIsImlhdCI6MTc1NTI3NTc1OH0.LIhHY1meOu2Nh6rbZjoBLbShe0uMKdTgt5OINKLWufE'
+    // const storeId = '01380526-8f2d-49f5-ade2-0011c82d043a'
+    const {token,user} = useAuth()
     const [dashboardData,setDashboardData] = useState({}) as any
     const [storeRatings,setStoreRatings] = useState([]) as any
     const [isEditPasswordModalOpen,setIsEditPasswordModalOpen] = useState(false)
@@ -25,7 +27,7 @@ export const OwnerDashboard = ()=>{
     }
     async function getStoreRatings(){
         try{
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/store-owner/store/ratings/${storeId}`,{
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/store-owner/store/ratings/${dashboardData?.storeId}`,{
                 headers:{
                     authorization:token
                 }
@@ -38,9 +40,12 @@ export const OwnerDashboard = ()=>{
     }
     useEffect(()=>{
         getDashboardData()
-        getStoreRatings()
 
     },[])
+
+    useEffect(()=>{
+        getStoreRatings()
+    },[dashboardData])
 
     return(
         <div className="w-screen h-screen bg-black">

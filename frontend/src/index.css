@@ -8,8 +8,12 @@
 
 body {
   font-family: 'Satoshi', 'Inter', sans-serif;
+  background-color: black;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   font-family: 'Satoshi', 'Inter', sans-serif;
+  background-color: black;
 }

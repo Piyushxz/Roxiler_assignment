@@ -4,13 +4,26 @@ import { AddUserModal } from "../components/AddUserModal"
 import { AddStoreModal } from "../components/AddStoreModal"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 export const AdminDashboard = ()=>{
+    const { token } = useAuth()
     const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores'>('overview')
+    
+    // User filters
     const [selectedRole, setSelectedRole] = useState<string>('All Roles')
     const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false)
+    const [userNameFilter, setUserNameFilter] = useState('')
+    const [userEmailFilter, setUserEmailFilter] = useState('')
+    const [userAddressFilter, setUserAddressFilter] = useState('')
+    
+    // Store filters
     const [selectedRating, setSelectedRating] = useState<string>('All Ratings')
     const [isRatingDropdownOpen, setIsRatingDropdownOpen] = useState(false)
+    const [storeNameFilter, setStoreNameFilter] = useState('')
+    const [storeDescriptionFilter, setStoreDescriptionFilter] = useState('')
+    
+    // Data states
     const [totalRatings,setTotalRatings] = useState(0)
     const [totalStores,setTotalStores] = useState(0)
     const [totalUsers,setTotalUsers] = useState(0)
@@ -18,6 +31,7 @@ export const AdminDashboard = ()=>{
     const [users,setUsers]= useState([])
     const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
     const [isAddStoreModalOpen, setIsAddStoreModalOpen] = useState(false)
+    
     const roles = ['All Roles', 'SYSTEM_ADMIN', 'NORMAL_USER', 'STORE_OWNER']
     const ratings = ['All Ratings', '1', '2', '3', '4', '5']
 
@@ -26,7 +40,7 @@ export const AdminDashboard = ()=>{
         try{
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard`,{
                 headers:{
-                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                    authorization: token
                 }
             })
             setTotalRatings(response.data.totalRatings)
@@ -41,10 +55,13 @@ export const AdminDashboard = ()=>{
 
     async function getStores(){
         try{
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/stores`,{
+            let url = `${import.meta.env.VITE_API_URL}/admin/stores?name=${storeNameFilter}&description=${storeDescriptionFilter}&rating=${selectedRating}`;
+            
+            
+            const response = await axios.get(url,{
                 headers:{
-                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'          
-                      }
+                    authorization: token
+                }
             })
             console.log(response.data)
             setStores(response.data.stores)
@@ -55,9 +72,10 @@ export const AdminDashboard = ()=>{
 
     async function getUsers(){
         try{
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users`,{
+
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users?name=${userNameFilter}&email=${userEmailFilter}&address=${userAddressFilter}&role=${selectedRole}`,{
                 headers:{
-                    authorization : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MGY4MGU4MS05MjY5LTRkOTktOTI3Ny1iOWU5NDg3YmI2N2UiLCJlbWFpbCI6InBpeXVzaDJAZ21haWwuY29tIiwicm9sZSI6IlNZU1RFTV9BRE1JTiIsImlhdCI6MTc1NTI1ODcxM30.6uS3LCBWK7Ve0ouqm6jp60Dymi7HhpHhZd0aWDHWYyo'
+                    authorization: token
                 }
             })
             console.log(response.data)
@@ -67,14 +85,22 @@ export const AdminDashboard = ()=>{
             console.log(err)
         }
     }
+
+    // Dashboard data effect
     useEffect(()=>{
         getDashboardData()
-        getStores()
-        getUsers()
     },[])
 
+    useEffect(()=>{
+        getUsers()
+    },[userNameFilter, userEmailFilter, userAddressFilter, selectedRole])
+
+    useEffect(()=>{
+        getStores()
+    },[storeNameFilter, storeDescriptionFilter, selectedRating])
+
     return(
-        <div className="w-screen h-screen bg-black">
+        <div className="min-h-screen bg-black">
             <Navbar/>
             <section className="w-[80%] mx-auto py-10">
 
@@ -150,30 +176,6 @@ export const AdminDashboard = ()=>{
                             </div>
                         </div>
 
-                        <div className="w-full flex items-center gap-4 my-4">
-                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
-                                <button 
-                                    onClick={() => setIsAddUserModalOpen(true)}
-                                    className="w-full hover:opacity-80 cursor-pointer transition-all duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2 "
-                                >
-                                    <PlusIcon className="size-4 text-black"/>
-                                    <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
-                                        Add User
-                                    </h3>
-                                </button>
-                            </div>
-                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
-                                                        <button 
-                                onClick={() => setIsAddStoreModalOpen(true)}
-                                className="w-full hover:opacity-80 transition-all cursor-pointer duration-300 bg-white text-black px-4 py-2 rounded-md flex items-center gap-2"
-                            >
-                                <PlusIcon className="size-4 text-black"/>
-                            <h3 className="text-black text-md font-satoshi font-semibold tracking-tighter">
-                                Add Store
-                            </h3>
-                            </button>
-                            </div>
-                        </div>
                     </>
                 )}
 
@@ -194,16 +196,34 @@ export const AdminDashboard = ()=>{
 
 
                         </div>
-                                                 <div className="flex gap-4 pt-4">
-                             <input type="text" placeholder="Filter By Name" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
-                             <input type="text" placeholder="Filter By Email" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
-                             <input type="text" placeholder="Filter By Address" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
+                                                 <div className="flex flex-wrap gap-4 pt-4">
+                             <input 
+                                 type="text" 
+                                 placeholder="Filter By Name" 
+                                 value={userNameFilter}
+                                 onChange={(e) => setUserNameFilter(e.target.value)}
+                                 className="flex-1 min-w-[200px] bg-white border border-black/15 rounded-md p-2" 
+                             />
+                             <input 
+                                 type="text" 
+                                 placeholder="Filter By Email" 
+                                 value={userEmailFilter}
+                                 onChange={(e) => setUserEmailFilter(e.target.value)}
+                                 className="flex-1 min-w-[200px] bg-white border border-black/15 rounded-md p-2" 
+                             />
+                             <input 
+                                 type="text" 
+                                 placeholder="Filter By Address" 
+                                 value={userAddressFilter}
+                                 onChange={(e) => setUserAddressFilter(e.target.value)}
+                                 className="flex-1 min-w-[200px] bg-white border border-black/15 rounded-md p-2" 
+                             />
                              
                              {/* Role Dropdown */}
-                             <div className="relative">
+                             <div className="relative min-w-[150px]">
                                  <button 
                                      onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                                     className="flex items-center justify-between bg-white border border-black/15 rounded-md p-2 min-w-[150px]"
+                                     className="flex items-center justify-between bg-white border border-black/15 rounded-md p-2 w-full"
                                  >
                                      <span className="text-black text-sm font-satoshi">{selectedRole}</span>
                                      <ChevronDown className={`text-black size-4 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''}`} />
@@ -238,19 +258,19 @@ export const AdminDashboard = ()=>{
                          
                          {/* Table */}
                          <div className="overflow-x-auto">
-                             <table className="w-full">
+                             <table className="w-full min-w-full table-fixed">
                                  <thead>
                                      <tr className="border-b border-white/15">
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Name
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Email
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Address
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Role
                                          </th>
                                      </tr>
@@ -313,15 +333,26 @@ export const AdminDashboard = ()=>{
                                 </h3>
                             </button>
                          </div>
-                         <div className="flex gap-4 pt-4">
-                             <input type="text" placeholder="Filter By Store Name" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
-                             <input type="text" placeholder="Filter By Description" className="flex-1 bg-white border border-black/15 rounded-md p-2" />
+                         <div className="flex flex-wrap gap-4 pt-4">
+                             <input 
+                                 type="text" 
+                                 placeholder="Filter By Store Name" 
+                                 value={storeNameFilter}
+                                 onChange={(e) => setStoreNameFilter(e.target.value)}
+                                 className="flex-1 min-w-[200px] bg-white border border-black/15 rounded-md p-2" 
+                             />
+                             <input 
+                                 type="text" 
+                                 placeholder="Filter By Description" 
+                                 value={storeDescriptionFilter}
+                                 onChange={(e) => setStoreDescriptionFilter(e.target.value)}
+                                 className="flex-1 min-w-[200px] bg-white border border-black/15 rounded-md p-2" 
+                             />
                              
-                             {/* Rating Dropdown */}
-                             <div className="relative">
+                             <div className="relative min-w-[150px]">
                                  <button 
                                      onClick={() => setIsRatingDropdownOpen(!isRatingDropdownOpen)}
-                                     className="flex items-center justify-between bg-white border border-black/15 rounded-md p-2 min-w-[150px]"
+                                     className="flex items-center justify-between bg-white border border-black/15 rounded-md p-2 w-full"
                                  >
                                      <span className="text-black text-sm font-satoshi">{selectedRating}</span>
                                      <ChevronDown className={`text-black size-4 transition-transform duration-200 ${isRatingDropdownOpen ? 'rotate-180' : ''}`} />
@@ -354,21 +385,20 @@ export const AdminDashboard = ()=>{
                              Stores List
                          </h2>
                          
-                         {/* Table */}
                          <div className="overflow-x-auto">
-                             <table className="w-full">
+                             <table className="w-full min-w-full table-fixed">
                                  <thead>
                                      <tr className="border-b border-white/15">
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Name
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Email
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Address
                                          </th>
-                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4">
+                                         <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
                                              Rating
                                          </th>
                                      </tr>
