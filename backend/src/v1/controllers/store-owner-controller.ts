@@ -62,8 +62,8 @@ export const getDashboard = async (req: Request, res: Response) => {
             });
         }
 
-        // Get stores owned by the store owner
-        const stores = await client.store.findMany({
+        // Get the first store owned by the store owner (each store owner can only have one store)
+        const store = await client.store.findFirst({
             where: { ownerId: userId },
             include: {
                 ratings: {
@@ -81,38 +81,36 @@ export const getDashboard = async (req: Request, res: Response) => {
             }
         });
 
-        if (stores.length === 0) {
+        if (!store) {
             return res.status(404).json({
-                message: "No stores found for this store owner"
+                message: "No store found for this store owner"
             });
         }
 
-        // Calculate average ratings for each store
-        const storesWithStats = stores.map(store => {
-            const totalRatings = store.ratings.length;
-            const averageRating = totalRatings > 0 
-                ? store.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / totalRatings 
-                : 0;
+        // Calculate average rating for the store
+        const totalRatings = store.ratings.length;
+        const averageRating = totalRatings > 0 
+            ? store.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / totalRatings 
+            : 0;
 
-            return {
-                storeId: store.id,
-                storeName: store.name,
-                storeDescription: store.description,
-                totalRatings,
-                averageRating: Math.round(averageRating * 100) / 100, 
-                ratings: store.ratings.map((rating: any) => ({
-                    id: rating.id,
-                    rating: rating.rating,
-                    comment: rating.comment,
-                    createdAt: rating.createdAt,
-                    user: rating.user
-                }))
-            };
-        });
+        const storeWithStats = {
+            storeId: store.id,
+            storeName: store.name,
+            storeDescription: store.description,
+            totalRatings,
+            averageRating: Math.round(averageRating * 100) / 100, 
+            ratings: store.ratings.map((rating: any) => ({
+                id: rating.id,
+                rating: rating.rating,
+                comment: rating.comment,
+                createdAt: rating.createdAt,
+                user: rating.user
+            }))
+        };
 
         res.status(200).json({
             message: "Dashboard data retrieved successfully",
-            stores: storesWithStats
+            store: storeWithStats
         });
     } catch (error) {
         console.error('Dashboard error:', error);

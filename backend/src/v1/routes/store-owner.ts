@@ -8,14 +8,10 @@ import {
 
 export const storeOwnerRouter = Router();
 
-// All routes require store owner authentication
 storeOwnerRouter.use(storeOwnerMiddleware);
 
-// Update password
 storeOwnerRouter.put('/update-password', updatePassword);
 
-// Get dashboard with store ratings and user information
 storeOwnerRouter.get('/dashboard', getDashboard);
 
-// Get specific store ratings
-storeOwnerRouter.get('/store/:storeId/ratings', getStoreRatings);
+storeOwnerRouter.get('/store/ratings/:storeId', getStoreRatings);

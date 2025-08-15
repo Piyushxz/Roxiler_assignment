@@ -1,0 +1,1 @@
+{"root":["./env.d.ts","./src/index.ts","./src/schemas.ts","./src/v1/controllers/admin-controller.ts","./src/v1/controllers/store-owner-controller.ts","./src/v1/controllers/user-controller.ts","./src/v1/middlewares/middleware.ts","./src/v1/routes/admin.ts","./src/v1/routes/index.ts","./src/v1/routes/store-owner.ts","./src/v1/routes/users.ts"],"version":"5.9.2"}

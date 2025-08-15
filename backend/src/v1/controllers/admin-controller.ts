@@ -5,12 +5,14 @@ import bcrypt from "bcryptjs";
 import { client } from "../..";
 
 export async function handleAdminLogin(req:Request,res:Response){
-
     try{
 
         const {email,password} = req.body
         if(!email || !password){
-
+            return res.status(400).json({
+                message:"All fields are required"
+            })
+        }
         const user = await client.user.findUnique({
             where:{email,role:'SYSTEM_ADMIN'}
         })
@@ -31,7 +33,7 @@ export async function handleAdminLogin(req:Request,res:Response){
             return;
         }
 
-        const token = jwt.sign({userId:user.id,email:user.email,role:user.role},process.env.JWT_SECRET,{expiresIn:'1h'})
+        const token = jwt.sign({userId:user.id,email:user.email,role:user.role},process.env.JWT_SECRET)
         
         return res.status(200).json({
             message:"Admin login successful",
@@ -39,7 +41,7 @@ export async function handleAdminLogin(req:Request,res:Response){
         })
         
     }
-}
+
     catch(err){
         console.error('Error admin login:',err)
         return res.status(500).json({
@@ -104,10 +106,44 @@ export async function handleCreateUser(req:Request,res:Response){
 
 export async function handleGetStores(req:Request,res:Response){
     try{
-        const stores = await client.store.findMany()
+        const stores = await client.store.findMany({
+            include:{
+                ratings:true,
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        address: true
+                    }
+                }
+            }
+        })
+
+        // Calculate average rating for each store
+        const storesWithAverageRating = stores.map(store => {
+            const totalRatings = store.ratings.length;
+            const averageRating = totalRatings > 0 
+                ? store.ratings.reduce((sum, rating) => sum + rating.rating, 0) / totalRatings 
+                : 0;
+
+            return {
+                id: store.id,
+                name: store.name,
+                description: store.description,
+                createdAt: store.createdAt,
+                updatedAt: store.updatedAt,
+                ownerId: store.ownerId,
+                owner: store.owner,
+                totalRatings,
+                averageRating: Math.round(averageRating * 100) / 100, 
+                ratings: store.ratings
+            };
+        });
+
         return res.status(200).json({
             message:"Stores fetched successfully",
-            stores
+            stores: storesWithAverageRating
         })
     }catch(err){
         console.error('Error fetching stores:',err)
@@ -147,5 +183,58 @@ export async function handleGetUsers(req:Request,res:Response) {
         })
     }catch(err){
         console.error('Error fetching users:',err)
+    }
+}
+
+export async function handleCreateStore(req:Request,res:Response){
+    try{
+        const {name,description,userId} = req.body
+        if(!name || !userId || !description){
+            return res.status(400).json({
+                message:"All fields are required"
+            })
+        }
+
+        const findUser = await client.user.findUnique({
+            where:{
+                id:userId
+            }
+        })
+
+        if(!findUser){
+            return res.status(404).json({
+                message:"User not found"
+            })
+        }
+
+        if(findUser.role !== 'STORE_OWNER'){
+            return res.status(403).json({
+                message:"User is not a store owner"
+            })
+        }
+        const store = await client.store.create({  
+            data:{
+                name,
+                ownerId:userId,
+                description,
+                // ratings:{
+                //     create:{
+                //         rating:0,
+                //         userId:userId
+                //     }
+                // }
+
+            }
+        })
+
+        return res.status(201).json({
+            message:"Store created successfully",
+            store
+        })
+    }catch(err){
+        console.error('Error creating store:',err)
+        return res.status(500).json({
+            message:"Internal server error"
+        })
     }
 }

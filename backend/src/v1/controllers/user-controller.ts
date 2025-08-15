@@ -86,7 +86,7 @@ export async function handleUserLogin(req:Request,res:Response){
             })
         }
 
-        const token = jwt.sign({userId:user.id,email:user.email,role:user.role},process.env.JWT_SECRET,{expiresIn:'1h'})
+        const token = jwt.sign({userId:user.id,email:user.email,role:user.role},process.env.JWT_SECRET)
         
         return res.status(200).json({
             message:"User login successful",
@@ -216,15 +216,31 @@ export async function handleGetStoresWithRatings(req:Request,res:Response){
                         comment:true,
                         createdAt:true,
                         user:true,
-                        userId:true
+                        userId:true,
+                        id:true
                     }
                 }
             },
             where:whereClause
         })
+
+        // Calculate average rating for each store
+        const storesWithAverageRating = stores.map(store => {
+            const totalRatings = store.ratings.length;
+            const averageRating = totalRatings > 0 
+                ? store.ratings.reduce((sum, rating) => sum + rating.rating, 0) / totalRatings 
+                : 0;
+
+            return {
+                ...store,
+                totalRatings,
+                averageRating: Math.round(averageRating * 100) / 100 // Round to 2 decimal places
+            };
+        });
+
         return res.status(200).json({
             message:"Stores fetched successfully",
-            stores
+            stores: storesWithAverageRating
         })
     }
     catch(err){
