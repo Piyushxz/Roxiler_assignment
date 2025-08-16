@@ -7,7 +7,7 @@ export const Navbar=()=>{
         <header className="w-full border-b border-white/15 bg-black" >
             <div className="flex justify-between items-center w-[80%] mx-auto py-4 ">
                 <h1 style={{fontFamily:'Satoshi'}} className="text-3xl font-satoshi font-extrabold tracking-tigher text-white">
-                    ratifyAI
+                    rateIt
 
                 </h1>
                 <div className="flex items-center gap-4">

@@ -1,4 +1,4 @@
-import { Edit, Search, Star } from "lucide-react"
+import { Edit } from "lucide-react"
 import { Navbar } from "../components/Navbar"
 import { useEffect, useState } from "react"
 import axios from "axios"
