@@ -14,7 +14,7 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
     })
     
     const userReview = store.ratings.find((rating: any) => rating.userId === currentUserId)
-    
+    console.log(error)
     const handleAddReview = async () => {
         setIsLoading(true)
         

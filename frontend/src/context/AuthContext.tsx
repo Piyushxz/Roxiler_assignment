@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const id = toast.loading('Signing up...')
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/sign-up`,userData);
-      
+      console.log(response)
 
       toast.success('Signed up successfully')
       

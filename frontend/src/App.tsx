@@ -1,15 +1,13 @@
 import { AdminDashboard } from './pages/AdminDashboard'
 import { UserDashboard } from './pages/UserDashboard'
 import { OwnerDashboard } from './pages/OwnerDashboard'
-import { Route, Routes, Navigate } from 'react-router'
+import { Route, Routes } from 'react-router'
 import { Login } from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoute'
-import { useAuth } from './context/AuthContext'
 import {  LandingPage } from './pages/Home'
 
 
 function App() {
-  const { user } = useAuth();
 
   return (
     <Routes>
