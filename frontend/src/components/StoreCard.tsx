@@ -214,7 +214,7 @@ export const StoreCard = ({ store, currentUserId, onRefresh }: any) => {
                                 onClick={userReview ? handleEditSubmit : handleAddReview}
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-md font-satoshi font-semibold hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 bg-black text-white px-4 py-2 rounded-md font-satoshi font-semibold border border-white/15 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? 'Updating...' : userReview ? 'Update Review' : 'Add Review'}
                             </button>
