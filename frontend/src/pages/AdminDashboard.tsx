@@ -108,7 +108,7 @@ export const AdminDashboard = ()=>{
                     Admin Dashboard
                 </h1>
 
-                <div className="w-full flex items-center gap-14 my-5 !bg-[#191919] py-3 border border-white/15 px-2 rounded-md relative">
+                <div className="w-full flex items-center gap-3 md:gap-14  my-5 overflow-x-auto md:overflow-x-hidden !bg-[#191919] py-3 border border-white/15 px-2 rounded-md relative">
                     <div 
                         className={`flex items-center gap-1 px-3 cursor-pointer  ${
                             activeTab === 'overview' ? 'bg-white text-black rounded-md font-bold transition-all duration-300' : 'text-white'
@@ -140,8 +140,8 @@ export const AdminDashboard = ()=>{
 
                 {activeTab === 'overview' && (
                     <>
-                        <div className="w-full flex justify-between items-center gap-4">
-                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
+                        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2 w-full md:w-auto">
                                 <div className="flex gap-2 items-center">
                                     <div className="border rounded-md p-2 border-white/15 size-10">
                                         <Users className="text-white "/>
@@ -152,18 +152,18 @@ export const AdminDashboard = ()=>{
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
+                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2 w-full md:w-auto">
                                 <div className="flex gap-2 items-center">
                                     <div className="border rounded-md p-2 border-white/15 size-10">
                                         <StoreIcon className="text-white "/>
                                     </div>
                                     <div className="flex flex-col">
-                                    <h2 className="text-white text-md font-satoshi tracking-tighter">Total Stores</h2>
+                                    <h2 className="text-white text-md font-satoshi tracking-tighter ">Total Stores</h2>
                                     <h3 className="text-white text-md font-satoshi font-semibold tracking-tighter">{totalStores}</h3>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2">
+                            <div className="flex-1 border rounded-md bg-[#191919] border-white/15 px-2 py-2 w-full md:w-auto">
                                 <div className="flex gap-2 items-center">
                                     <div className="border rounded-md p-2 border-white/15 size-10">
                                         <UserStar className="text-white "/>
@@ -257,8 +257,8 @@ export const AdminDashboard = ()=>{
                          </h2>
                          
                          {/* Table */}
-                         <div className="overflow-x-auto">
-                             <table className="w-full min-w-full table-fixed">
+                         <div className="overflow-x-auto w-full">
+                             <table className="w-full min-w-[600px] table-fixed">
                                  <thead>
                                      <tr className="border-b border-white/15">
                                          <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
@@ -282,7 +282,7 @@ export const AdminDashboard = ()=>{
                                                  <td className="text-white text-sm font-satoshi py-3 px-4">
                                                      {user.name}
                                                  </td>
-                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4 truncate max-w-0">
                                                      {user.email}
                                                  </td>
                                                  <td className="text-white text-sm font-satoshi py-3 px-4">
@@ -385,8 +385,8 @@ export const AdminDashboard = ()=>{
                              Stores List
                          </h2>
                          
-                         <div className="overflow-x-auto">
-                             <table className="w-full min-w-full table-fixed">
+                         <div className="overflow-x-auto w-full">
+                             <table className="w-full min-w-[600px] table-fixed">
                                  <thead>
                                      <tr className="border-b border-white/15">
                                          <th className="text-left text-white text-sm font-satoshi font-semibold tracking-tighter py-3 px-4 w-1/4">
@@ -410,7 +410,7 @@ export const AdminDashboard = ()=>{
                                                  <td className="text-white text-sm font-satoshi py-3 px-4">
                                                      {store.name}
                                                  </td>
-                                                 <td className="text-white text-sm font-satoshi py-3 px-4">
+                                                 <td className="text-white text-sm font-satoshi py-3 px-4 truncate max-w-0">
                                                      {store.owner?.email || 'No email'}
                                                  </td>
                                                  <td className="text-white text-sm font-satoshi py-3 px-4">

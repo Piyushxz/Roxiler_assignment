@@ -58,6 +58,29 @@ export const Login = ()=>{
             </div>
             
             <div className="w-96 bg-[#191919] border border-white/15 rounded-md p-6">
+                <div className="mb-6 p-4 bg-gray-800/30 border border-gray-700 rounded-md">
+                    <h3 className="text-white text-sm font-semibold mb-3 font-satoshi">
+                        Demo Credentials
+                    </h3>
+                    <div className="space-y-2">
+                        <div className="bg-gray-900/50 rounded p-2">
+                            <div className="text-xs text-gray-400 mb-1">User</div>
+                            <div className="text-white font-mono text-xs">finaluser@gmail.com</div>
+                            <div className="text-white font-mono text-xs">Piyush@12sa</div>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                            <div className="text-xs text-gray-400 mb-1">Admin</div>
+                            <div className="text-white font-mono text-xs">finaladmin@gmail.com</div>
+                            <div className="text-white font-mono text-xs">Piyush@12sa</div>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                            <div className="text-xs text-gray-400 mb-1">Store Owner</div>
+                            <div className="text-white font-mono text-xs">finalOwner2@gmail.com</div>
+                            <div className="text-white font-mono text-xs">Piyush@12sa</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {activeTab === 'signup' && (
                         <div>

@@ -13,7 +13,6 @@ export const updatePassword = async (req: Request, res: Response) => {
             });
         }
 
-        // Get user details
         const user = await client.user.findUnique({
             where: { id: userId }
         });
@@ -24,7 +23,7 @@ export const updatePassword = async (req: Request, res: Response) => {
             });
         }
 
-        // Verify current password
+        // VeriFY current password
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
         if (!isCurrentPasswordValid) {
             return res.status(401).json({
@@ -32,10 +31,10 @@ export const updatePassword = async (req: Request, res: Response) => {
             });
         }
 
-        // Hash new password
+        // Hash  password
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update password
+        // UpdAte password
         await client.user.update({
             where: { id: userId },
             data: { password: hashedNewPassword }
