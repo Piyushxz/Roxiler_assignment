@@ -9,7 +9,6 @@ export const LandingPage = () => {
     <>
       <div className="w-screen min-h-screen bg-black">
         <div className="py-6 px-6 md:px-12 md:py-6 text-center md:text-left">
-          {/* Hero Section */}
           <div className="pt-24 rounded-xl group my-7 mx-4 md:mx-16">
             <div className="relative">
                               <motion.h2 

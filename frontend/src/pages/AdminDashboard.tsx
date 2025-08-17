@@ -23,7 +23,6 @@ export const AdminDashboard = ()=>{
     const [storeNameFilter, setStoreNameFilter] = useState('')
     const [storeDescriptionFilter, setStoreDescriptionFilter] = useState('')
     
-    // Data states
     const [totalRatings,setTotalRatings] = useState(0)
     const [totalStores,setTotalStores] = useState(0)
     const [totalUsers,setTotalUsers] = useState(0)
